@@ -42,6 +42,7 @@ AccelStepper frontL = AccelStepper(MotorInterfaceType, frontLeftPin1, frontLeftP
 AccelStepper backR = AccelStepper(MotorInterfaceType, backRightPin1, backRightPin3, backRightPin2, backRightPin4);
 AccelStepper backL = AccelStepper(MotorInterfaceType, backLeftPin1, backLeftPin3, backLeftPin2, backLeftPin4);
 
+String testc = "led_on";
 
 class TEST {
   public:
@@ -112,19 +113,36 @@ class RUN {
 RUN Motor; // motor class
 
 void setup(){
-  
+
+  Serial.begin(9600);
+
+
   backR.setMaxSpeed(1700);
   backL.setMaxSpeed(1700);
   frontR.setMaxSpeed(1700);
   frontL.setMaxSpeed(1700);
+
+  
 }
 
 void loop(){
   
 
-  Motor.stop();
+  if (Serial.available()) {  // check for incoming serial data
+      Serial.println("link found");
+
+      String command = Serial.readString();  // read command from serial port
+      if (testc == "led_on") {  // turn on LED
+         Serial.println("moving forward");
+         Motor.forward();
+      } else if (command == "led_off") {  // turn off LED
+         Motor.back();
+         Serial.println("stopped");
+      } else if (command == "read_a0") {  // read and send A0 analog value
+         Serial.println(analogRead(A0));
+      }
   
 
-  
+  }
 }
 
