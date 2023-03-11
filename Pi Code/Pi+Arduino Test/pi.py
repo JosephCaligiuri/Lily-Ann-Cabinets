@@ -1,9 +1,4 @@
-#!/usr/bin/env python3
-"""Control an Arduino over the USB port."""
-# usb.py
-# Created by John Woolsey on 12/17/2019.
-# Copyright (c) 2019 Woolsey Workshop.  All rights reserved.
-# USB_PORT = "/dev/ttyUSB0"  # Arduino Uno R3 Compatible
+
 USB_PORT = "/dev/ttyACM0"  # Arduino Uno WiFi Rev2
 # Imports
 import serial
@@ -11,10 +6,13 @@ import serial
 def print_commands():
    """Prints available commands."""
    print("Available commands:")
-   print("  a - Retrieve Arduino value")
-   print("  l - Turn on Arduino LED")
-   print("  k - Turn off Arduino LED")
-   print("  x - Exit program")
+   print("  w - Move Forward")
+   print("  s - Move Backward")
+   print("  a - Strafe to the left")
+   print("  d - Strafe to the right")
+   print("  k - Stop Motion")
+   print("  r - Retrieve Arduino value")
+   print("  x - exit program")
 # Main
 # Connect to USB serial port at 9600 baud
 try:
@@ -26,9 +24,11 @@ except:
 # Send commands to Arduino
 print("Enter a command from the keyboard to send to the Arduino.")
 print_commands()
+
+#sending commands to arduino 
 while True:
    command = input("Enter command: ")
-   if command == "a":  # read Arduino A0 pin value
+   if command == "r":  # read Arduino A0 pin value
       usb.write(b'read_a0')  # send command to Arduino
       line = usb.readline()  # read input from Arduino
       line = line.decode()  # convert type from bytes to string
@@ -39,12 +39,21 @@ while True:
          print("Unknown value '" + line + "', setting to 0.")
          value = 0
       print("Arduino A0 value:", value)
-   elif command == "l":  # turn on Arduino LED
-      usb.write(b'led_on')  # send command to Arduino
-      print("Arduino LED turned on.")
-   elif command == "k":  # turn off Arduino LED
-      usb.write(b'led_off')  # send command to Arduino
-      print("Arduino LED turned off.")
+   elif command == "w":  
+      usb.write(b'move_f')  
+      print("Forward")
+   elif command == "s":  
+      usb.write(b'move_b')  
+      print("Back")
+   elif command == "a":  
+      usb.write(b'move_l')  
+      print("Left")
+   elif command == "d": 
+      usb.write(b'move_r')
+      print("Right")
+   elif command =="k":
+      usb.write(b'stop')
+      print("Stopped")
    elif command == "x":  # exit program
       print("Exiting program.")
       exit()
