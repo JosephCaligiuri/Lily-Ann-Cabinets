@@ -1,64 +1,28 @@
-
 // Title: DriveTrain
 //
 // Description: Base code for the drive train of 
 // the robot for lily ann cabinets (currently specifically for the invintory robot may become universial)
 // 
-// version: 0.1.5
+// version: 0.2.0
 //
-// date: 3-8-2023
-//
+// date: 3-13-2023
 
 
+// front MC
+#define fenA 7
+#define fin1 6
+#define fin2 5
+#define fenB 2
+#define fin3 4
+#define fin4 3
 
-
-
-#include <AccelStepper.h>
-
-#define MotorInterfaceType 8
-
-#define frontLeftPin1 22
-#define frontLeftPin2 23
-#define frontLeftPin3 24
-#define frontLeftPin4 25
-#define frontRightPin1 26
-#define frontRightPin2 27
-#define frontRightPin3 28
-#define frontRightPin4 29
-#define backRightPin1 30
-#define backRightPin2 31
-#define backRightPin3 32
-#define backRightPin4 33
-#define backLeftPin1 34
-#define backLeftPin2 35
-#define backLeftPin3 36
-#define backLeftPin4 37
-
-int mSpeed = 1000;
-
-AccelStepper frontR = AccelStepper(MotorInterfaceType, frontRightPin1, frontRightPin3, frontRightPin2, frontRightPin4);
-AccelStepper frontL = AccelStepper(MotorInterfaceType, frontLeftPin1, frontLeftPin3, frontLeftPin2, frontLeftPin4);
-
-AccelStepper backR = AccelStepper(MotorInterfaceType, backRightPin1, backRightPin3, backRightPin2, backRightPin4);
-AccelStepper backL = AccelStepper(MotorInterfaceType, backLeftPin1, backLeftPin3, backLeftPin2, backLeftPin4);
-
-String testc = "led_on";
-
-class TEST {
-  public:
-
-  void set(){
-    backR.runSpeed();
-    backL.runSpeed();
-    frontR.runSpeed();
-    frontL.runSpeed();
-
-  }  
-  private:
-};
-
-TEST Test;
-
+// back MC
+#define benA 13
+#define bin1 12
+#define bin2 11
+#define benB 8
+#define bin3 10
+#define bin4 9
 
 // Class for controlling the motors 
 class RUN {
@@ -67,42 +31,79 @@ class RUN {
   
   // move forward
   void forward(){
+    digitalWrite(fin1, HIGH);
+    digitalWrite(fin2, LOW);
 
-    backR.setSpeed(mSpeed);
-    backL.setSpeed(-mSpeed);
-    frontR.setSpeed(mSpeed);
-    frontL.setSpeed(-mSpeed);
-    
-    Test.set(); //(runSpeed)
+    digitalWrite(fin3, HIGH);
+    digitalWrite(fin4, LOW);
+
+    digitalWrite(bin1, HIGH);
+    digitalWrite(bin2, LOW);
+
+    digitalWrite(bin3, HIGH);
+    digitalWrite(bin4, LOW);
+
+
   }
 
   //move back
   void back() {
+    digitalWrite(fin1, LOW);
+    digitalWrite(fin2, HIGH);
 
-    backR.setSpeed(-mSpeed);
-    backL.setSpeed(mSpeed);
-    frontR.setSpeed(-mSpeed);
-    frontL.setSpeed(mSpeed);
+    digitalWrite(fin3, LOW);
+    digitalWrite(fin4, HIGH);
 
-    Test.set();
+    digitalWrite(bin1, LOW);
+    digitalWrite(bin2, HIGH);
+
+    digitalWrite(bin3, LOW);
+    digitalWrite(bin4, HIGH);
   }
 
   //stop motion
   void stop() {
+    digitalWrite(fin1, LOW);
+    digitalWrite(fin2, LOW);
 
-    backR.setSpeed(0);
-    backL.setSpeed(0);
-    frontR.setSpeed(0);
-    frontL.setSpeed(0);
-    
-    Test.set();
+    digitalWrite(fin3, LOW);
+    digitalWrite(fin4, LOW);
+
+    digitalWrite(bin1, LOW);
+    digitalWrite(bin2, LOW);
+
+    digitalWrite(bin3, LOW);
+    digitalWrite(bin4, LOW);
   }
 
-  void strafeLeft() {
+  void left() {
+    digitalWrite(fin1, LOW);
+    digitalWrite(fin2, HIGH);
+
+    digitalWrite(fin3, HIGH);
+    digitalWrite(fin4, LOW);
+
+    digitalWrite(bin1, HIGH);
+    digitalWrite(bin2, LOW);
+
+    digitalWrite(bin3, LOW);
+    digitalWrite(bin4, HIGH);
+
     
   }
 
-  void strafeRight() {
+  void right() {
+    digitalWrite(fin1, HIGH);
+    digitalWrite(fin2, LOW);
+
+    digitalWrite(fin3, LOW);
+    digitalWrite(fin4, HIGH);
+
+    digitalWrite(bin1, LOW);
+    digitalWrite(bin2, HIGH);
+
+    digitalWrite(bin3, HIGH);
+    digitalWrite(bin4, LOW);
 
   }
   //turns motor off
@@ -114,35 +115,46 @@ RUN Motor; // motor class
 
 void setup(){
 
+  Motor.stop();
+
   Serial.begin(9600);
 
+  pinMode(fin1, OUTPUT);
+  pinMode(fin2, OUTPUT);
+  pinMode(fin3, OUTPUT);
+  pinMode(fin4, OUTPUT);
 
-  backR.setMaxSpeed(1700);
-  backL.setMaxSpeed(1700);
-  frontR.setMaxSpeed(1700);
-  frontL.setMaxSpeed(1700);
+  pinMode(bin1, OUTPUT);
+  pinMode(bin2, OUTPUT);
+  pinMode(bin3, OUTPUT);
+  pinMode(bin4, OUTPUT);
 
   
 }
 
 void loop(){
   
-
-  if (Serial.available()) {  // check for incoming serial data
-      Serial.println("link found");
+   if (Serial.available()) {  // check for incoming serial data
+      
 
       String command = Serial.readString();  // read command from serial port
-      if (testc == "led_on") {  // turn on LED
+      if (command == "move_f") {  // turn on LED
          Serial.println("moving forward");
          Motor.forward();
-      } else if (command == "led_off") {  // turn off LED
-         Motor.back();
+      } else if (command == "stop") {  // turn off LED
+         Motor.stop();
          Serial.println("stopped");
-      } else if (command == "read_a0") {  // read and send A0 analog value
-         Serial.println(analogRead(A0));
+      } else if (command == "move_b") {  // read and send A0 analog value
+         Motor.back();
+      } else if (command == "move_l") {
+         Motor.left();
+      } else if (command == "move_r") {
+         Motor.right();
       }
+
   
 
-  }
+  }  
+  
 }
 
