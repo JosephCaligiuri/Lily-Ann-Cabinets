@@ -1,53 +1,57 @@
 import cv2
 import numpy as np
 
-# Load the pre-trained Haar cascade classifier for face detection
+# Load the pre-trained face detector model
 face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
 # Load the pre-trained face recognition model
-face_recognizer = cv2.face.LBPHFaceRecognizer_create()
-face_recognizer.read('face_recognizer_model.xml')
+recognizer = cv2.face.LBPHFaceRecognizer_create()
+recognizer.read('face_recognizer.yml')
 
-# Set the font and text color for displaying the name of the recognized person
-font = cv2.FONT_HERSHEY_SIMPLEX
-text_color = (255, 255, 255)
+# Create a window to display the camera feed
+cv2.namedWindow('Live Facial Recognition', cv2.WINDOW_NORMAL)
 
-# Open the video capture device
+# Initialize the video capture object
 cap = cv2.VideoCapture(0)
 
 while True:
-    # Read a frame from the video stream
+    # Read a frame from the camera
     ret, frame = cap.read()
 
-    # Convert the frame to grayscale for face detection
+    # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    # Detect faces in the grayscale image
+    # Detect faces in the grayscale frame
     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
 
-    # For each face detected, perform face recognition
+    # Loop over each detected face
     for (x, y, w, h) in faces:
         # Extract the face region of interest (ROI)
-        face_roi = gray[y:y+h, x:x+w]
+        roi_gray = gray[y:y+h, x:x+w]
+        roi_color = frame[y:y+h, x:x+w]
 
-        # Perform face recognition on the ROI
-        label, confidence = face_recognizer.predict(face_roi)
-
-        # If the confidence is below a threshold, display the name of the recognized person
-        if confidence < 100:
-            name = "Your Name"
-            cv2.putText(frame, name, (x, y-10), font, 1, text_color, 2)
+        # Use the face recognition model to predict the ID of the person
+        id_, confidence = recognizer.predict(roi_gray)
 
         # Draw a rectangle around the face
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+        color = (255, 0, 0) # blue
+        thickness = 2
+        cv2.rectangle(frame, (x, y), (x+w, y+h), color, thickness)
 
-    # Display the video stream with face detection and recognition
-    cv2.imshow('Face Recognition', frame)
+        # Display the ID of the person and their confidence score
+        font = cv2.FONT_HERSHEY_SIMPLEX
+        name = f'Unknown'+ str(confidence)
+        if confidence < 140:
+            name = f'Person {id_}'
+        cv2.putText(frame, name, (x+5, y-5), font, 1, color, thickness, cv2.LINE_AA)
 
-    # Wait for the 'q' key to be pressed to exit
+    # Display the resulting frame
+    cv2.imshow('Live Facial Recognition', frame)
+
+    # Wait for a key press and check if it is the "q" key
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# Release the video capture device and close all windows
+# Release the video capture object and close the window
 cap.release()
 cv2.destroyAllWindows()
