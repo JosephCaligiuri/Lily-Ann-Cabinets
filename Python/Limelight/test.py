@@ -2,10 +2,11 @@ import cv2
 import numpy as np
 import math
 import serial
+import time
 
 USB_PORT = '/dev/ttyACM0'
 
-'''
+
 try:
    usb = serial.Serial(USB_PORT, 9600, timeout=2)
 except:
@@ -13,7 +14,7 @@ except:
    print("Exiting program.")
    exit() 
 
-'''
+
 
 # Define the target color
 target_color = np.array([115, 211, 165])
@@ -31,6 +32,7 @@ def s_equation(x): #slow decrease equation
 def f_equation(x):
     e = math.e
     return 0.04 * math.pow(e, 0.01 * x) #fast decrease equation
+
 
 # Start looping over frames from the video stream
 while True:
@@ -71,38 +73,37 @@ while True:
     else:
         speed = 0
 
-   
 
 
     if distance_x > 20:
         print("positive")
         state = "p"
         speed = speed
-       # usb.write(b'p')
+        usb.write(b'p')
     elif distance_x < -20:
         print("negitave")
         state = "n"
         speed = speed * -1
-     #   usb.write(b'n')   
+        usb.write(b'n')   
     else:
         print("center")
         state = "c"
         speed = 0
-     #   usb.write(b'c')
+        usb.write(b'c')
 
     #line = usb.readline().decode().strip()
     #print(line)
 
     print("Distance:" + str(distance_x) + "Speed:" + str(speed) + "state:" + str(state))
 
-    '''
-    #line = usb.readline().decode().strip()
-    #print(line)
-    temp = str(distance_x)
-    bDist = temp.encode('ascii')
-    print(bDist)
-    usb.write(bDist)
-    '''
+    
+    line = usb.readline().decode().strip()
+    print(line)
+    #temp = str(speed)
+    #bDist = temp.encode('ascii')
+   # print(bDist)
+    #usb.write(bDist)
+    
     
 
     # Draw a square at the center of the frame
@@ -116,8 +117,9 @@ while True:
     # Exit the loop if the user presses the 'q' key
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
+    
 
 # Clean up the video stream and close any open windows
 cap.release()
 cv2.destroyAllWindows()
-#usb.close()
+usb.close()

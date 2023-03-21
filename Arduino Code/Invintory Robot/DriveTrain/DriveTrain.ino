@@ -119,6 +119,8 @@ void setup(){
 
   Serial.begin(9600);
 
+  delay(10000);
+
   pinMode(fin1, OUTPUT);
   pinMode(fin2, OUTPUT);
   pinMode(fin3, OUTPUT);
@@ -128,6 +130,8 @@ void setup(){
   pinMode(bin2, OUTPUT);
   pinMode(bin3, OUTPUT);
   pinMode(bin4, OUTPUT);
+
+  delay(5000);
 
   
 }
