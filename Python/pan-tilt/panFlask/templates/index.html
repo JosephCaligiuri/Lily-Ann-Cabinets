@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Webcam Test</title>
+
+    <meta charset="UTF-8">
+
+
+    <link href="./static/styles.css" type="text/css" rel="stylesheet"/> <!-- CSS stylesheet -->
+    <link rel="icon" type="image/x-icon" href="./static/icon.ico" />
+
+
+  </head>
+  <body>
+    <img src="{{ url_for('video_feed') }}">
+
+    <button onclick="runForward()">forward</button>
+    <button onclick="runBackward()">back</button>
+    <button onclick="runLeft()">left</button>
+    <button onclick="runRight()">right</button>
+    <button onclick="stop()">Stop</button>
+    
+    <script>
+      function stop() {
+        fetch('/stop')
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.error(error))
+      }
+
+      function runForward() {
+        fetch('/forward')
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.error(error))
+      }
+
+      function runBackward() {
+        fetch('/back')
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.error(error))
+      }
+
+      function runLeft() {
+        fetch('/left')
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.error(error))
+      }
+
+      function runRight() {
+        fetch('/right')
+          .then(response => response.text())
+          .then(result => console.log(result))
+          .catch(error => console.error(error))
+      }
+    </script>
+  </body>
+</html>
