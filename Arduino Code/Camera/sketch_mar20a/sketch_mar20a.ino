@@ -114,33 +114,19 @@ void setup(){
   bool check = false;
 
   D.printStr("init");
+  
 
-  delay(5000);
+  
 }
 
 void loop(){
   
     // check for incoming serial data
-      
-      if (Serial.available()) {  // check for incoming serial data
-      
+    D.clear();
+    int sensorValue = analogRead(A3);
 
-      String Com = Serial.readString();  // read command from serial port
-      if (Com == "p"){
-        Motor.Left();
-        
-      } 
-      if (Com == "n") {
-        Motor.Right();
-      }
-      if (Com == "c") {
-        Motor.stop();
-      }
-      else{
-        Motor.stop();
-      }
-      }
-
+    D.printInt(sensorValue);
+    delay(50);
   
 
   }  

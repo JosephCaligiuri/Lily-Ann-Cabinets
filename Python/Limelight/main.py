@@ -1,20 +1,41 @@
-from networktables import NetworkTables
+from machine import Pin, PWM
+from time import sleep
 
-NetworkTables.initialize(server="10.0.1.247")
+IN1 = Pin(24, Pin.OUT)
+IN2 = Pin(23, Pin.OUT)
 
+speed = PWM(Pin(25))
+speed.freq(1000)
 
-# Get a reference to the "limelight" table
-table = NetworkTables.getTable("limelight")
-
-
-# Get the current values for tx, ty, ta, and ts from the table
-tx = table.getNumber('tx', None)
-ty = table.getNumber('ty', None)
-ta = table.getNumber('ta', None)
-ts = table.getNumber('ts', None)
-
-# Print the current values
-print("tx:", tx)
-print("ty:", ty)
-print("ta:", ta)
-print("ts:", ts)
+while True:
+        speed.duty_u16(10000)
+        IN1.low()  #spin forward
+        IN2.high()
+        sleep(5)
+        
+        IN1.low()  #stop
+        IN2.low()
+        sleep(2)
+        
+        speed.duty_u16(20000)
+        IN1.high()  #spin backward
+        IN2.low()
+        sleep(5)
+        
+        IN1.low()  #stop
+        IN2.low()
+        sleep(2)
+    
+        speed.duty_u16(30000)
+        IN1.low()  #spin forward
+        IN2.high()
+        sleep(5)
+        
+        IN1.low()  #stop
+        IN2.low()
+        sleep(2)
+        
+        speed.duty_u16(40000)
+        IN1.high()  #spin backward
+        IN2.low()
+        sleep(5)

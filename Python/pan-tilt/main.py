@@ -1,21 +1,17 @@
-import sys
+import pigpio
 
-sys.path.append('./')
-
-from servo import Servo
 from time import sleep
+pi = pigpio.pi()
+servo = pi.set_mode(12, pi.p)
+val = -1
 
-pan = Servo(pin=13)
-tilt = Servo(pin=12)
-
-while True:
-
-    val = int(input("In: "))
-   
-    #pan.set_angle(val)
-    tilt.set_angle(val)
+try:
     
-    if val == 1:
-        break
-    
-        
+    while True:
+        servo.value = val
+        sleep(0.1)
+        val = val + 0.01
+        if val > 1:
+            val = -1
+except KeyboardInterrupt:
+	print("Program stopped")

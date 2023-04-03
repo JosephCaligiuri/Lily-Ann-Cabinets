@@ -1,13 +1,14 @@
 from flask import Flask, Response, render_template
 import cv2
 
-from servo import Servo
+t = -1
+p = -1
+
+from gpiozero import Servo
 
 pan = Servo(pin=13)
 tilt = Servo(pin=12)
 
-p = 0
-t = 0
 
 app = Flask(__name__)
 
@@ -42,9 +43,11 @@ def video_feed():
 @app.route('/forward')
 def forward():
     # insert your Python code here
-
+    
     print("forward")
-    t = t - 10
+    t = t + 0.1
+    tilt.value = t
+    print(t)
     result = "Forward"
     return result
 
@@ -52,7 +55,9 @@ def forward():
 def back():
     
     print("back")
-    t = t + 10
+    t = t - 0.1
+    tilt.value = t
+    print(t)
     result = "Back"
     return result
 
@@ -60,7 +65,10 @@ def back():
 def left():
     
     print("left")
-    p = p + 10
+    p = p + 0.1
+    pan.value = p
+
+    print(p)
     result = "left"
     return result
 
@@ -68,7 +76,9 @@ def left():
 def right():
     
     print("right")
-    p = p - 10
+    p = p - 0.1
+    pan.value = p
+    print(p)
     result = "right"
     return result
 
@@ -79,8 +89,10 @@ def stop():
     result = "Stop"
     return result
 
-pan.set_angle(p)
-tilt.set_angle(t)
+if p > 1:
+    p = -1
+if t > 1:
+    t = -1
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port='8080', debug=True)
