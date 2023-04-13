@@ -85,6 +85,12 @@ class BLOCK {
 
   bool valid;  
 
+  void checkForCard();
+  {
+
+    
+  }
+
   void readBlock(int x) // "x" block to be read
   {
     int test = x;
@@ -202,16 +208,11 @@ void loop() //Code to be looped repeatedly after setup()
   if (Serial.available()){
     String command = Serial.readString();
     if(command == "4"){
-      b = 4;
-    }
-    if(command == "1"){
-      b = 1;
-    }
-    if(command == "2"){
-      b = 2;
-    }
-
-    B.readBlock(b);
+      delay(1000);
+      B.readBlock(1);
+      delay(5000)
+    
+    
   }
 
   
