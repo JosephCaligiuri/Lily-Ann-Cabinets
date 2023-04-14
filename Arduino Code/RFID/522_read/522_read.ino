@@ -1,5 +1,6 @@
 /*
- - Version: 0.5.3
+ - Version: 0.5.4
+ - Last Update: "4/14/2023"
  - Name: 522_read
  - Author: Joseph Caligiuri
  - Description: Arduino Code for using a MFRC522 RFID reader to scad tag blocks for Lily Ann Cabinets invintory
@@ -82,79 +83,75 @@ WRITE D; // call Oled class as "D"
 // Class for RFID reader
 class BLOCK {
   public:
+    byte block;
+    byte len;
+
+  void setKey(){
+    for (byte i = 0; i < 6; i++) key.keyByte[i] = 0xFF;
+  }
 
   bool valid;  
 
-  void checkForCard();
-  {
 
-    
-  }
 
   void readBlock(int x) // "x" block to be read
   {
-    int test = x;
-    byte block = test;  //Test 
-
-    if (block < 0 || block > 63) // check if input is valid
-    { 
-      Serial.println("Invalid block number!");
-      D.clear();
-      D.printStr("Invalid block number!");
+    for (byte i = 0; i < x; i++) key.keyByte[i] = 0xFF;
+  byte len;
+  
+  //-------------------------------------------
+  // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
+  if ( ! mfrc522.PICC_IsNewCardPresent()) {
+    return;
+  }
+  
+  // Select one of the cards
+  if ( ! mfrc522.PICC_ReadCardSerial()) {
+    return;
+  }
+  
+  ;
+  
+  for (byte block = 1; block <= 5; block++) { // change this range to read different blocks
+    if (block == 3){
+      block++;
+    }
+    
+    byte buffer[18];
+    len = 18;
+    
+    status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, block, &key, &(mfrc522.uid));
+    if (status != MFRC522::STATUS_OK) {
+      Serial.print(F("Authentication failed for block "));
+      Serial.print(block);
+      Serial.print(F(": "));
+      Serial.println(mfrc522.GetStatusCodeName(status));
       return;
     }
-
- 
-  
-  
-  // Prepare key - all keys are set to FFFFFFFFFFFFh at chip delivery from the factory.
-    for (byte i = 0; i < 6; i++) key.keyByte[i] = 0xFF;
-
-    byte len = 18; // set buffer
-    byte buffer1[len];
-  
-  // Reset the loop if no new card present on the sensor/reader. This saves the entire process when idle.
-  if (!mfrc522.PICC_IsNewCardPresent()) 
-  {
-    bool valid = false;
-    return;
-  }
-  // Select one of the cards
-  if (!mfrc522.PICC_ReadCardSerial()) 
-  {
-    return;
-  }
-  
-  // checks for authentication with Key
-  status = mfrc522.PCD_Authenticate(MFRC522::PICC_CMD_MF_AUTH_KEY_A, block, &key, &(mfrc522.uid));
-  if (status != MFRC522::STATUS_OK) 
-  {
-    Serial.print("Authentication failed: ");
-    Serial.println(mfrc522.GetStatusCodeName(status));
-    return;
+    
+    status = mfrc522.MIFARE_Read(block, buffer, &len);
+    if (status != MFRC522::STATUS_OK) {
+      Serial.print(F("Reading failed for block "));
+      Serial.print(block);
+      Serial.print(F(": "));
+      Serial.println(mfrc522.GetStatusCodeName(status));
+      return;
+    }
+    
+    String value = "";
+    for (uint8_t i = 0; i < 16; i++) {
+      value += (char)buffer[i];
+    }
+    value.trim();
+      
+    Serial.println(value);
+      
+    delay(200);    
   }
   
-  // checks to make sure block is read
-  status = mfrc522.MIFARE_Read(block, buffer1, &len);
-  if (status != MFRC522::STATUS_OK) 
-  {
-    Serial.print("null");
-    D.printStr("Card Read Failed");
-    Serial.println(mfrc522.GetStatusCodeName(status));
-    return;
-  }
   
-  // parses block bytes to a legible string
-  String value = "";
-  for (uint8_t i = 0; i < 16; i++) 
-  {
-    value += (char)buffer1[i];
-  }
-  value.trim();
   
-  D.clear();
-  Serial.println(value);
-  D.printStr(value);
+  delay(2000);
   
   mfrc522.PICC_HaltA();
   mfrc522.PCD_StopCrypto1();
@@ -185,6 +182,8 @@ class SETUP {
     D.clear();
 
     D.printStr("waiting for Card");          
+
+    B.setKey();
     
   }
 
@@ -201,19 +200,12 @@ void setup() //Code to be ran on startup
   S.runSetup();
 }
 
+
 void loop() //Code to be looped repeatedly after setup()
 {
-  int b;
+  
 
-  if (Serial.available()){
-    String command = Serial.readString();
-    if(command == "4"){
-      delay(1000);
-      B.readBlock(1);
-      delay(5000)
-    
-    
-  }
+  B.readBlock(4);
 
   
 

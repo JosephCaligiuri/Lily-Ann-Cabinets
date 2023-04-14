@@ -14,31 +14,27 @@ def createNewSheet():
 
 
     workbook.save(directory + date +'.xlsx')
-    
-
 
 def writeToSheet(r, c, count):
     today = datetime.date.today()
     date = today.strftime('%d-%m-%Y')
-
     directory = 'sheet/'
 
-    if not os.path.exists(directory + date + '.xlsx'):
-        createNewSheet()
+    if not os.path.exists(directory):
+        os.mkdir(directory)
 
-    workbook = openpyxl.load_workbook(directory + date +'.xlsx')
+    file_path = os.path.join(directory, date + '.xlsx')
+
+    if not os.path.exists(file_path):
+        workbook = openpyxl.Workbook()
+        workbook.save(file_path)
+
+    workbook = openpyxl.load_workbook(file_path)
     worksheet = workbook.active
 
     cell = worksheet.cell(row=r, column=c)
     cell.value = count
 
-    workbook.save(directory + date +'.xlsx')
+    workbook.save(file_path)
 
-
-
-
-
-
-
-
-
+writeToSheet(2, 2, "this is also a  test")

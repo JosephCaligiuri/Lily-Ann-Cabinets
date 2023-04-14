@@ -4,8 +4,9 @@ from lilyanncabinets import sheets, main
 import time
 
 
-sheets.createNewSheet()
 
+
+sheets.writeToSheet(3, 3, "this is also data")    
 
 ser = Serial('COM10', 9600)  # Open serial port at 9600 baud.
 
@@ -15,7 +16,7 @@ def a():
     data = ser.readline().strip()
     text_widget.insert(tk.END, data)
 
-    sheets.writeToSheet(2, 1, str(data))    
+    sheets.writeToSheet(2, 1, data)    
     
     
 
