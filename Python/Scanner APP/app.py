@@ -3,15 +3,9 @@ import flask
 
 app = flask.Flask(__name__)
 
-@app.before_first_request
-def readUSB():
-    usb = serial.Serial("\\\\.\\COM10", 9600)
-    data = usb.readline().strip()
-    return data
-
 @app.route("/")
 def index():
-    text = readUSB()
+    text = "test"
     return flask.render_template("index.html", dynamic_text=text)
 
 if __name__ == '__main__':
