@@ -205,7 +205,7 @@ void loop() //Code to be looped repeatedly after setup()
 {
   
 
-  B.readBlock(4);
+  B.readBlock(3);
 
   
 
