@@ -2,14 +2,14 @@ from flask import Flask, Response, render_template
 import cv2
 import serial
 
-# USB_PORT = "/dev/ttyACM0"
+USB_PORT = "/dev/ttyACM0"
 
-'''try:
+try:
    usb = serial.Serial(USB_PORT, 9600, timeout=2)
 except:
    print("ERROR - Could not open USB serial port.  Please check your port name and permissions.")
    print("Exiting program.")
-   exit()'''
+   exit()
 
 app = Flask(__name__)
 
@@ -17,6 +17,7 @@ def gen_frames():
     cap = cv2.VideoCapture(0)
 
     while True:
+
         ret, frame = cap.read()
 
         if not ret:
@@ -42,35 +43,35 @@ def video_feed():
 @app.route('/forward')
 def forward():
     # insert your Python code here
-   # usb.write(b'move_f')
+    usb.write(b'move_f')
     print("forward")
     result = "Forward"
     return result
 
 @app.route('/back')
 def back():
-   # usb.write(b'move_b')
+    usb.write(b'move_b')
     print("back")
     result = "Back"
     return result
 
 @app.route('/left')
 def left():
-   # usb.write(b'move_l')
+    usb.write(b'move_l')
     print("left")
     result = "left"
     return result
 
 @app.route('/right')
 def right():
-   # usb.write(b'move_r')
+    usb.write(b'move_r')
     print("right")
     result = "right"
     return result
 
 @app.route('/stop')
 def stop():
-   # usb.write(b'stop')
+    usb.write(b'stop')
     print("stop")
     result = "Stop"
     return result

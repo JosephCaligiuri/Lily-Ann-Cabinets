@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Joystick</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="joystick" width="200" height="200"></canvas>
+    <p id="coordinates"></p>
+    <script>
+        var canvas = document.getElementById('joystick');
+        var ctx = canvas.getContext('2d');
+        var maxDistance = canvas.width / 2 - 10; // the maximum distance from the center of the joystick to the edge
+        var joystickX = 0;
+        var joystickY = 0;
+
+        // handle mouse/touch input
+        canvas.addEventListener('mousedown', handleMouseDown);
+        canvas.addEventListener('touchstart', handleMouseDown);
+        canvas.addEventListener('mousemove', handleMouseMove);
+        canvas.addEventListener('touchmove', handleMouseMove);
+        canvas.addEventListener('mouseup', handleMouseUp);
+        canvas.addEventListener('touchend', handleMouseUp);
+
+        var mouseDown = false;
+
+        function handleMouseDown(e) {
+            mouseDown = true;
+            handleMouseMove(e);
+        }
+
+        function handleMouseMove(e) {
+            if (mouseDown) {
+                // calculate the distance from the center of the joystick to the input position
+                var rect = canvas.getBoundingClientRect();
+                var mouseX = e.clientX - rect.left - canvas.width / 2;
+                var mouseY = canvas.height / 2 - (e.clientY - rect.top);
+                var distance = Math.sqrt(mouseX * mouseX + mouseY * mouseY);
+                var dx = Math.min(mouseX, maxDistance);
+                var dy = Math.min(mouseY, maxDistance);
+                var distance = Math.sqrt(dx * dx + dy * dy);
+
+                // update the joystick position
+                joystickX = dx / maxDistance;
+                joystickY = dy / maxDistance; // flip the Y axis to match the standard Cartesian coordinate system
+
+                // redraw the joystick and update the coordinates
+                drawJoystick();
+                updateCoordinates();
+
+                // send the joystick coordinates to the server
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    x: joystickX,
+                    y: joystickY
+            })
+        });
+    }
+}
+
+        function handleMouseUp(e) {
+            mouseDown = false;
+            joystickX = 0;
+            joystickY = 0;
+            drawJoystick();
+            updateCoordinates();
+
+            // send joystick coordinates to Flask server
+            var data = {x: joystickX, y: joystickY};
+            fetch('/joystick', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(data)
+            });
+        }
+
+        function drawJoystick() {
+            // clear the canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // draw the joystick base
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2, canvas.height / 2, maxDistance, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // draw the joystick handle
+            ctx.beginPath();
+            ctx.arc(canvas.width / 2 + joystickX * maxDistance, canvas.height / 2 - joystickY * maxDistance, 10, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function updateCoordinates() {
+            var coordinates = document.getElementById('coordinates');
+            coordinates.textContent = 'Joystick coordinates: (' + joystickX + ', ' + joystickY + ')';
+        }
+
+        // draw the initial joystick position
+        drawJoystick();
+    </script>
+</body>
+</html>

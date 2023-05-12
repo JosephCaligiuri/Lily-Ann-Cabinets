@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chatbot</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  </head>
+  <body>
+    <h1>Chatbot</h1>
+    <input type="text" id="prompt" />
+    <button id="submit">Submit</button>
+    <div id="response"></div>
+
+    <script>
+      $("#submit").click(function() {
+        var prompt = $("#prompt").val();
+
+        $.ajax({
+          url: "/get_response",
+          type: "POST",
+          data: { prompt: prompt },
+          success: function(response) {
+            $("#response").html(response.response);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
