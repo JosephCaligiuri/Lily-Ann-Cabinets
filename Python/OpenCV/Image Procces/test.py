@@ -1,28 +1,32 @@
 import cv2
+import pytesseract
 
-camera_id = 0
-delay = 1
-window_name = 'OpenCV QR Code'
+# Initialize the webcam
+cap = cv2.VideoCapture(0)
 
-qcd = cv2.QRCodeDetector()
-cap = cv2.VideoCapture(camera_id)
+# Set up Tesseract OCR
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'  # Update this path to your Tesseract installation
 
 while True:
+    # Capture a frame from the webcam
     ret, frame = cap.read()
 
-    if ret:
-        ret_qr, decoded_info, points, _ = qcd.detectAndDecodeMulti(frame)
-        if ret_qr:
-            for s, p in zip(decoded_info, points):
-                if s:
-                    print(s)
-                    color = (0, 255, 0)
-                else:
-                    color = (0, 0, 255)
-                frame = cv2.polylines(frame, [p.astype(int)], True, color, 8)
-        cv2.imshow(window_name, frame)
+    # Convert the frame to grayscale for better OCR results
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
-    if cv2.waitKey(delay) & 0xFF == ord('q'):
+    # Perform OCR on the grayscale frame
+    text = pytesseract.image_to_string(gray)
+
+    # Display the frame with detected text and numbers
+    cv2.imshow('Text and Numbers Detection', gray)
+
+    # Print the detected text and numbers to the console
+    print(text)
+
+    # Exit the loop when the 'q' key is pressed
+    if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-cv2.destroyWindow(window_name)
+# Release the webcam and close the OpenCV window
+cap.release()
+cv2.destroyAllWindows()

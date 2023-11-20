@@ -27,6 +27,5 @@ file_id = upload_response.id
 
 fine_tune_response = openai.FineTune.create(training_file=file_id, model="davinci")
 
-print("Fine-tuned model ID:", fine_tune_response.id)
-
+print("Fine-tuned model ID:", fine_tune_response.model)
 

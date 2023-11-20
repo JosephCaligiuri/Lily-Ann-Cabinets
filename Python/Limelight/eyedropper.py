@@ -8,6 +8,8 @@ while True:
     
     # Grab a screenshot of the screen and get the RGB value of the pixel under the cursor
     im = ImageGrab.grab()
+
+    
     pixel = im.getpixel((x, y))
     print(f"Position: ({x}, {y}) RGB value: {pixel}")
     
