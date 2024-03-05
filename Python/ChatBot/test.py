@@ -4,7 +4,9 @@ import os
 
 app = Flask(__name__)
 
-openai.api_key = "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" # Replace with your actual OpenAI API key
+openai.api_key = "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"  # Replace with your actual OpenAI API key
+
+short_term_memory = []
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -25,15 +27,21 @@ def get_response():
     return jsonify({"response": response})
 
 def generate_response(input_text):
-    prompt = (f"You work for Lily Ann Cabinets as a AI customer service representative"
+    global short_term_memory  # Add global keyword to access the shared memory
+
+    prompt = (f"You are an AI Helper here to assist with questions"
               f"\n\n"
               f"Human: {input_text}\n"
               f"AI:")
+    
+    # Append input_text to the short-term memory
+    short_term_memory.append(input_text)
+    
     completions = openai.Completion.create(
-        model="ft:gpt-3.5-turbo-0613:lac::7qr3DY9v", # Replace with the OpenAI API engine you want to use
+        engine="davinci",  # Replace with the OpenAI API engine you want to use
         prompt=prompt,
         max_tokens=1000,
-        stop = ["/n", "Human"],
+        stop=["/n", "Human"],
         n=1,
         temperature=0.2,
     )
