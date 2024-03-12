@@ -5,14 +5,18 @@ import scratch
 
 rc = scratch.RoboClaw("/dev/ttyACM0", 38400)
 
-address = 0x80
+fl = 0x80
+fr = 0x81
+bl = 0x82
+br = 0x83
 
 def get_controller_values(device):
     for event in device.read_loop():
         if event.type == evdev.ecodes.EV_ABS and event.code == 1:
             axis_value = event.value
-            # Normalize axis value to range from -100 to 100
             normalized_value = axis_value
+
+            TargetRotation = 0 #placeholder for testing 
 
 
             normalized_value = int(normalized_value)
@@ -23,7 +27,7 @@ def get_controller_values(device):
                 normalized_value = 0
             
 
-            rc.drive_motor_duty(address, normalized_value)
+            rc.drive_motor_duty(fl, normalized_value - TargetRotation)
 
             print(f"Axis {event.code}: {normalized_value}")
 
